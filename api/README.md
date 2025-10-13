@@ -20,13 +20,14 @@ The export was performed via the Query API using the `listCaseTemplate` query.
 
 ## Contents
 -  ```CaseTemplateExport/```  
-  -  ```<TemplateName>.json``` — raw JSON export of each case template
-  -  ```- CaseTemplateManifest.txt``` — list of all exported template names
+- -  ```<TemplateName>.json``` — raw JSON export of each case template
+- -  ```- CaseTemplateManifest.txt``` — list of all exported template names
 -  ```- CaseTemplateExport.zip```	 — packaged archive containing the above
 
 ## Notes
 
-- 	Filenames have been sanitized for Windows compatibility (illegal characters replaced with ).
+- 	Filenames have been sanitized for Windows compatibility (illegal characters replaced with ```_``` ).
 - 	Each JSON file contains the full template object as returned by TheHive 5 Query API.
 - 	This export is intended as a one-time snapshot for developer use.
 Any updates or re-imports should be coordinated with the development team.
+
