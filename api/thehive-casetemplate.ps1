@@ -16,6 +16,7 @@ $body = @{
     }
 } | ConvertTo-Json -Depth 10
 
+#Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body '{"query":{"_name":"listCaseTemplates"}}' #test
 $response = Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body
 
 # Save each template
