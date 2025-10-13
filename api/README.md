@@ -32,7 +32,9 @@ The export was performed via the Query API using the `listCaseTemplate` query.
 Any updates or re-imports should be coordinated with the development team.
 
 Convert JSON->CSV
+```powershell
 $data = Get-Content -Raw -Path "CaseTemplateExport\MyTemplate.json" | ConvertFrom-Json
 
 $data | Select-Object name, severity, @{Name="Tags";Expression={($_.tags -join ";")}}, @{Name="TaskCount";Expression={$_.tasks.Count}} |
     Export-Csv -Path "MyTemplate_Flat.csv" -NoTypeInformation -Encoding UTF8
+```
