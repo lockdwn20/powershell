@@ -20,8 +20,8 @@ The export was performed via the Query API using the `listCaseTemplate` query.
 
 ## Contents
 -  ```CaseTemplateExport/```  
-- -  ```<TemplateName>.json``` — raw JSON export of each case template
-- -  ```- CaseTemplateManifest.txt``` — list of all exported template names
+ -  ```<TemplateName>.json``` — raw JSON export of each case template
+ -  ```- CaseTemplateManifest.txt``` — list of all exported template names
 -  ```- CaseTemplateExport.zip```	 — packaged archive containing the above
 
 ## Notes
