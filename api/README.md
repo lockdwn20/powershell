@@ -19,9 +19,9 @@ The export was performed via the Query API using the `listCaseTemplate` query.
 - 	Output Format: Individual JSON files (one per template), plus a manifest
 
 ## Contents
- 	
-- 	 — raw JSON export of each case template
-- 	 — list of all exported template names
+-  ``` - CaseTemplateExport/ ```  
+  - 	- ``` <TemplateName>.json ``` — raw JSON export of each case template
+  - 	 — list of all exported template names
 - 	 — packaged archive containing the above
 
 ## Notes
