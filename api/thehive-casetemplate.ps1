@@ -11,9 +11,11 @@ $headers = @{
 
 # Query API body: request all case-template objects
 $body = @{
-    query = @{
-        _name = "listCaseTemplates"
-    }
+    query = @(
+        @{
+            _name = "listCaseTemplates"
+        }
+    )
 } | ConvertTo-Json -Depth 10
 
 #Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body '{"query":{"_name":"listCaseTemplates"}}' #test
