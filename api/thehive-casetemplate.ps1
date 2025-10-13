@@ -9,15 +9,20 @@ $headers = @{
     "Accept"        = "application/json"
 }
 
-# Empty query returns all case templates
-$body = @{ query = @{} } | ConvertTo-Json -Depth 10
+# Query API body: request all case-template objects
+$body = @{
+    query = @{
+        _name = "listCaseTemplates"
+    }
+} | ConvertTo-Json -Depth 10
 
-$response = Invoke-RestMethod -Uri "$baseUrl/db/case-template/_search" -Method POST -Headers $headers -Body $body
+$response = Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body
 
-# Create export folder
-$exportDir = "CaseTemplateExport"
-if (-not (Test-Path $exportDir)) {
-    New-Item -ItemType Directory -Path $exportDir | Out-Null
+# Save each template
+foreach ($doc in $response) {
+    $template = $doc
+    $name = $template.name -replace '[\\/:*?"<>|]', '_'
+    $template | ConvertTo-Json -Depth 10 | Out-File -FilePath "$name.json" -Encoding utf8
 }
 
 $manifest = @()
