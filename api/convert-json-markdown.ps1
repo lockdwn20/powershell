@@ -39,18 +39,23 @@ Get-ChildItem -Path $jsonFolder -Filter *.json | ForEach-Object {
         $template = $template -replace "{{#each tags}}(?s).*?{{/each}}", $tagOutput
     }
 
-    # Tasks loop
-    if ($template -match "{{#each tasks}}(?s)(.*?){{/each}}") {
-        $loopBlock = $matches[1]
-        $taskOutput = foreach ($task in $json.tasks) {
-            $block = $loopBlock
-            foreach ($prop in $task.PSObject.Properties.Name) {
-                $block = $block -replace "{{\s*$prop\s*}}", [string]$task.$prop
-            }
-            $block
+# Replace tasks loop
+if ($template -match "{{#each tasks}}(?s)(.*?){{/each}}") {
+    $loopBlock = $matches[1]
+
+    # Sort tasks by the 'order' field (numeric sort)
+    $sortedTasks = $json.tasks | Sort-Object {[int]$_.order}
+
+    $taskOutput = foreach ($task in $sortedTasks) {
+        $block = $loopBlock
+        foreach ($prop in $task.PSObject.Properties.Name) {
+            $block = $block -replace "{{\s*$prop\s*}}", [string]$task.$prop
         }
-        $template = $template -replace "{{#each tasks}}(?s).*?{{/each}}", ($taskOutput -join "`n")
+        $block
     }
+
+    $template = $template -replace "{{#each tasks}}(?s).*?{{/each}}", ($taskOutput -join "`n")
+}
 
     # Conditional extraData
     if ($template -match "{{#if extraData}}(?s)(.*?){{/if}}") {
