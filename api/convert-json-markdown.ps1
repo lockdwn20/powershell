@@ -39,28 +39,28 @@ Get-ChildItem -Path $jsonFolder -Filter *.json | ForEach-Object {
         $template = $template -replace "{{#each tags}}(?s).*?{{/each}}", $tagOutput
     }
 
-# Replace tasks loop
-if ($template -match "{{#each tasks}}(?s)(.*?){{/each}}") {
-    $loopBlock = $matches[1]
+    # Replace tasks loop
+    if ($template -match "{{#each tasks}}(?s)(.*?){{/each}}") {
+        $loopBlock = $matches[1]
 
-    # Sort tasks by the 'order' field (numeric sort)
-    $sortedTasks = $json.tasks | Sort-Object {[int]$_.order}
+        # Sort tasks by the 'order' field (numeric sort)
+        $sortedTasks = $json.tasks | Sort-Object {[int]$_.order}
 
-    $taskOutput = foreach ($task in $sortedTasks) {
-        $block = $loopBlock
-        foreach ($prop in $task.PSObject.Properties.Name) {
-            if ($prop -eq 'order') {
-                # Increment order by 1 before replacing
-                $block = $block -replace "{{\s*order\s*}}", ([int]$task.$prop + 1)
-            } else {
-                $block = $block -replace "{{\s*$prop\s*}}", [string]$task.$prop
+        $taskOutput = foreach ($task in $sortedTasks) {
+            $block = $loopBlock
+            foreach ($prop in $task.PSObject.Properties.Name) {
+                if ($prop -eq 'order') {
+                    # Increment order by 1 before replacing
+                    $block = $block -replace "{{\s*order\s*}}", ([int]$task.$prop + 1)
+                } else {
+                    $block = $block -replace "{{\s*$prop\s*}}", [string]$task.$prop
+                }
             }
+            $block
         }
-        $block
-    }
 
-    $template = $template -replace "{{#each tasks}}(?s).*?{{/each}}", ($taskOutput -join "`n")
-}
+        $template = $template -replace "{{#each tasks}}(?s).*?{{/each}}", ($taskOutput -join "`n")
+    }
 
     # Conditional extraData
     if ($template -match "{{#if extraData}}(?s)(.*?){{/if}}") {
