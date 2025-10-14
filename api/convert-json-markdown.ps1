@@ -49,7 +49,12 @@ if ($template -match "{{#each tasks}}(?s)(.*?){{/each}}") {
     $taskOutput = foreach ($task in $sortedTasks) {
         $block = $loopBlock
         foreach ($prop in $task.PSObject.Properties.Name) {
-            $block = $block -replace "{{\s*$prop\s*}}", [string]$task.$prop
+            if ($prop -eq 'order') {
+                # Increment order by 1 before replacing
+                $block = $block -replace "{{\s*order\s*}}", ([int]$task.$prop + 1)
+            } else {
+                $block = $block -replace "{{\s*$prop\s*}}", [string]$task.$prop
+            }
         }
         $block
     }
