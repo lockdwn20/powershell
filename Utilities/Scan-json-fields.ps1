@@ -5,18 +5,28 @@ param (
 
 Get-ChildItem -Path $RootPath -Recurse -Filter *.json -File | ForEach-Object {
     try {
+        # Parse JSON file
         $json = Get-Content $_.FullName -Raw | ConvertFrom-Json
+
+        # Start building output row
         $output = [ordered]@{
-            File = $_.Name
+            File = $_.BaseName   # filename without extension
         }
 
+        # Loop through requested fields
         foreach ($field in $Fields) {
-            $value = $json.PSObject.Properties[$field]?.Value
-            $output[$field] = if ($null -ne $value) { $value } else { "[missing]" }
+            if ($json.PSObject.Properties[$field]) {
+                $output[$field] = $json.$field
+            }
+            else {
+                $output[$field] = "[missing]"
+            }
         }
 
+        # Emit as object
         [PSCustomObject]$output
-    } catch {
+    }
+    catch {
         Write-Warning "Failed to parse JSON: $($_.FullName)"
     }
 }
