@@ -6,42 +6,41 @@ $json = Get-Content "incident.json" | ConvertFrom-Json
 foreach ($key in $json.PSObject.Properties.Name) {
     $value = $json.$key
     if ($value -isnot [System.Collections.IEnumerable] -or $value -is [string]) {
-        $template = $template -replace "{{\s*$key\s*}}", [regex]::Escape($value)
+        $pattern = "{{\s*$key\s*}}"
+        $template = $template -replace $pattern, [string]$value
     }
 }
 
 # Replace tags loop
-if ($template -match "{{#each tags}}(.*?){{/each}}") {
+if ($template -match "{{#each tags}}(?s)(.*?){{/each}}") {
     $loopBlock = $matches[1]
-    $tagOutput = ""
-    foreach ($tag in $json.tags) {
-        $tagOutput += ($loopBlock -replace "{{tags}}", [regex]::Escape($tag)) + "`n"
-    }
-    $template = $template -replace "{{#each tags}}.*?{{/each}}", [regex]::Escape($tagOutput)
+    $tagOutput = ($json.tags | ForEach-Object {
+        $loopBlock -replace "{{\s*tags\s*}}", $_
+    }) -join "`n"
+    $template = $template -replace "{{#each tags}}(?s).*?{{/each}}", $tagOutput
 }
 
 # Replace tasks loop
-if ($template -match "{{#each tasks}}(.*?){{/each}}") {
+if ($template -match "{{#each tasks}}(?s)(.*?){{/each}}") {
     $loopBlock = $matches[1]
-    $taskOutput = ""
-    foreach ($task in $json.tasks) {
+    $taskOutput = foreach ($task in $json.tasks) {
         $block = $loopBlock
         foreach ($prop in $task.PSObject.Properties.Name) {
-            $block = $block -replace "{{\s*$prop\s*}}", [regex]::Escape($task.$prop)
+            $block = $block -replace "{{\s*$prop\s*}}", [string]$task.$prop
         }
-        $taskOutput += "$block`n"
+        $block
     }
-    $template = $template -replace "{{#each tasks}}.*?{{/each}}", [regex]::Escape($taskOutput)
+    $template = $template -replace "{{#each tasks}}(?s).*?{{/each}}", ($taskOutput -join "`n")
 }
 
 # Handle conditional block for extraData
-if ($template -match "{{#if extraData}}(.*?){{/if}}") {
+if ($template -match "{{#if extraData}}(?s)(.*?){{/if}}") {
     if ($json.extraData) {
-        $template = $template -replace "{{#if extraData}}.*?{{/if}}", [regex]::Escape($json.extraData)
+        $template = $template -replace "{{#if extraData}}(?s).*?{{/if}}", [string]$json.extraData
     } else {
-        $template = $template -replace "{{#if extraData}}.*?{{/if}}", "_No additional notes._"
+        $template = $template -replace "{{#if extraData}}(?s).*?{{/if}}", "_No additional notes._"
     }
 }
 
 # Save final output
-Set-Content "output.md" $template
+Set-Content "output.md" $template -Encoding UTF8
