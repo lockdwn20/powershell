@@ -3,7 +3,7 @@
 **Owner:** {{_createdBy}}  
 **Last Updated:** {{_updatedAt}}
 
-**Description:** {{description}}
+**Description:** {{incidentDescription}}
 
 - Severity: {{severity}} - {{severityLabel}}
 - TLP: {{tlp}} - {{tlpLabel}}

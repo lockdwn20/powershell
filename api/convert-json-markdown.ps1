@@ -2,14 +2,18 @@
 $template = Get-Content "template.md" -Raw
 $json = Get-Content "incident.json" | ConvertFrom-Json
 
-# Replace simple fields
+# Replace simple fields (skip description, handle separately)
 foreach ($key in $json.PSObject.Properties.Name) {
+    if ($key -eq 'description') { continue }
     $value = $json.$key
     if ($value -isnot [System.Collections.IEnumerable] -or $value -is [string]) {
         $pattern = "{{\s*$key\s*}}"
         $template = $template -replace $pattern, [string]$value
     }
 }
+
+# Explicitly replace incidentDescription
+$template = $template -replace "{{\s*incidentDescription\s*}}", [string]$json.description
 
 # Replace tags loop
 if ($template -match "{{#each tags}}(?s)(.*?){{/each}}") {
