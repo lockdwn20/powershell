@@ -119,3 +119,25 @@ try {
 } catch {
     Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
 }
+
+$body = @{
+    query = @(
+        @{
+            _name   = "listCaseTemplate"
+            from    = 0
+            size    = 5
+            _fields = @("id","name")
+        }
+    )
+} | ConvertTo-Json -Depth 10 -Compress
+
+Write-Host "Sending body:" $body -ForegroundColor Yellow
+
+try {
+    $raw = Invoke-WebRequest -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body -ContentType "application/json"
+    Write-Host "HTTP Status:" $raw.StatusCode -ForegroundColor Green
+    Write-Host "First 300 chars of response:" -ForegroundColor Cyan
+    $raw.Content.Substring(0, [Math]::Min(300, $raw.Content.Length))
+} catch {
+    Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
+}
