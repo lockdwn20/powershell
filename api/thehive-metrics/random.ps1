@@ -49,3 +49,27 @@ try {
         Write-Host "Response body: $($reader.ReadToEnd())"
     }
 }
+
+$baseUrl = "https://your-hive-instance/api/v1"
+$apiKey  = "your_api_key_here"
+
+$headers = @{
+    "Authorization" = "Bearer $apiKey"
+    "Content-Type"  = "application/json"
+    "Accept"        = "application/json"
+}
+
+$body = @{
+    query = @(
+        @{
+            _name   = "listCase"
+            size    = 1
+            _fields = @("id")
+        }
+    )
+} | ConvertTo-Json -Depth 10 -Compress
+
+Write-Host "Sending body:" $body
+
+$response = Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body
+$response
