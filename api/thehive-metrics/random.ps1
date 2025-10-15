@@ -73,3 +73,49 @@ Write-Host "Sending body:" $body
 
 $response = Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body
 $response
+
+-----------
+
+# --- Config ---
+$baseUrl = "https://your-hive-instance/api/v1"
+$apiKey  = "your_api_key_here"
+
+$headers = @{
+    "Authorization" = "Bearer $apiKey"
+    "Content-Type"  = "application/json"
+    "Accept"        = "application/json"
+}
+
+# --- Narrow date range: just one day ---
+$startDate = "2024-10-01T00:00:00Z"
+$endDate   = "2024-10-02T00:00:00Z"
+
+# --- Build body with explicit fields and small page ---
+$body = @{
+    query = @(
+        @{
+            _name   = "listCase"
+            from    = 0
+            size    = 1
+            range   = @{
+                createdAt = @{
+                    gte = $startDate
+                    lte = $endDate
+                }
+            }
+            _fields = @("id","title","caseTemplate","createdAt")
+        }
+    )
+} | ConvertTo-Json -Depth 10 -Compress
+
+Write-Host "Sending body:" $body -ForegroundColor Yellow
+
+# --- Use Invoke-WebRequest to see raw response ---
+try {
+    $raw = Invoke-WebRequest -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body -ContentType "application/json"
+    Write-Host "HTTP Status:" $raw.StatusCode -ForegroundColor Green
+    Write-Host "First 200 chars of response:" -ForegroundColor Cyan
+    $raw.Content.Substring(0, [Math]::Min(200, $raw.Content.Length))
+} catch {
+    Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
+}
