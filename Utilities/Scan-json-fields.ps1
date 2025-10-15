@@ -1,6 +1,7 @@
 param (
     [string]$RootPath = ".",
     [string[]]$Fields = @("title", "tags", "status")
+    [string]$CsvExport = ".\export.csv"
 )
 
 Get-ChildItem -Path $RootPath -Recurse -Filter *.json -File | ForEach-Object {
@@ -29,4 +30,4 @@ Get-ChildItem -Path $RootPath -Recurse -Filter *.json -File | ForEach-Object {
     catch {
         Write-Warning "Failed to parse JSON: $($_.FullName)"
     }
-}
+} | Export-Csv "$CsvExport" -NoTypeInformation
