@@ -18,7 +18,10 @@ $from     = 0
 $total    = 0
 $allCases = @()
 
+Write-Host "Press 'Q' at any time to stop early..." -ForegroundColor Yellow
+
 do {
+    # Build query body
     $body = @{
         query = @(
             @{
@@ -35,6 +38,7 @@ do {
         )
     } | ConvertTo-Json -Depth 10
 
+    # Run query
     $response = Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body
 
     if ($response) {
@@ -42,10 +46,17 @@ do {
         $count = $response.Count
         $total += $count
 
-        # --- Progress output ---
         Write-Host ("Fetched {0} cases so far..." -f $total) -ForegroundColor Cyan
-
         $from += $pageSize
+    }
+
+    # --- Escape hatch: press Q to quit ---
+    if ([Console]::KeyAvailable) {
+        $key = [Console]::ReadKey($true).Key
+        if ($key -eq 'Q') {
+            Write-Host "Stopping early at $total cases." -ForegroundColor Red
+            break
+        }
     }
 
 } while ($response.Count -eq $pageSize)
