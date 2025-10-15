@@ -246,13 +246,13 @@ $body = @{
                     @{
                         _gte = @{
                             _field = "createdAt"
-                            _value = "2024-10-01T00:00:00Z"
+                            _value = "2025-10-13T00:00:00Z"
                         }
                     },
                     @{
                         _lte = @{
                             _field = "createdAt"
-                            _value = "2024-10-02T00:00:00Z"
+                            _value = "2025-10-14T00:00:00Z"
                         }
                     }
                 )
@@ -261,3 +261,29 @@ $body = @{
         }
     )
 } | ConvertTo-Json -Depth 10 -Compress
+
+$body = @{
+    query = @(
+        @{ _name = "listCase" }
+        @{
+            _name = "filter"
+            _eq   = @{
+                _field = "status"
+                _value = "Open"
+            }
+        }
+        @{
+            _name  = "sort"
+            _field = "startDate"
+            _order = "desc"
+        }
+        @{
+            _name   = "paginate"
+            _limit  = 10
+            _offset = 0
+        }
+    )
+} | ConvertTo-Json -Depth 10 -Compress
+
+$response = Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body
+$response
