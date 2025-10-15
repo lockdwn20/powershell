@@ -15,6 +15,7 @@ $endDate   = (Get-Date).ToUniversalTime().ToString("o")
 # --- Pagination settings ---
 $pageSize = 500
 $from     = 0
+$total    = 0
 $allCases = @()
 
 do {
@@ -38,6 +39,12 @@ do {
 
     if ($response) {
         $allCases += $response
+        $count = $response.Count
+        $total += $count
+
+        # --- Progress output ---
+        Write-Host ("Fetched {0} cases so far..." -f $total) -ForegroundColor Cyan
+
         $from += $pageSize
     }
 
