@@ -60,3 +60,11 @@ $summary | Export-Csv -Path ".\CaseTemplateSummary.csv" -NoTypeInformation -Enco
 
 # --- Display ---
 $summary
+
+$body = @{
+    query = @(
+        @{ _name = "listCase" }
+        @{ _name = "page"; from = 0; to = 5 }
+        @{ _name = "fields"; _fields = @("id","title","status","createdAt","caseTemplate") }
+    )
+} | ConvertTo-Json -Depth 10 -Compress
