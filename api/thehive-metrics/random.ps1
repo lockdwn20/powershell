@@ -191,3 +191,46 @@ $body = @{
         }
     )
 } | ConvertTo-Json -Depth 10 -Compress
+
+
+$body = @{
+    query = @(
+        # Step 1: list cases
+        @{
+            _name = "listCase"
+        }
+        # Step 2: filter by createdAt >= start
+        @{
+            _name = "filter"
+            _gte  = @{
+                _field = "createdAt"
+                _value = "2024-10-01T00:00:00Z"
+            }
+        }
+        # Step 3: filter by createdAt <= end
+        @{
+            _name = "filter"
+            _lte  = @{
+                _field = "createdAt"
+                _value = "2024-10-02T00:00:00Z"
+            }
+        }
+        # Step 4: sort by createdAt descending
+        @{
+            _name   = "sort"
+            _fields = @(@{ createdAt = "desc" })
+        }
+        # Step 5: page results (from 0 to 5)
+        @{
+            _name = "page"
+            from  = 0
+            to    = 5
+        }
+    )
+} | ConvertTo-Json -Depth 10 -Compress
+
+Write-Host "Sending body:" $body -ForegroundColor Yellow
+
+$raw = Invoke-WebRequest -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body -ContentType "application/json"
+Write-Host "HTTP Status:" $raw.StatusCode -ForegroundColor Green
+$raw.Content.Substring(0, [Math]::Min(300, $raw.Content.Length))
