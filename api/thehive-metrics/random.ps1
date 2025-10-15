@@ -315,3 +315,30 @@ $body = @{
 
 $response = Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body
 $response
+
+$body = @{
+    query = @(
+        @{ _name = "listCase" }
+        @{
+            _name = "filter"
+            _eq   = @{
+                _field = "status"
+                _value = "Open"
+            }
+        }
+        @{
+            _name   = "sort"
+            _fields = @(
+                @{ startDate = "desc" }
+            )
+        }
+        @{
+            _name   = "paginate"
+            _limit  = 10
+            _offset = 0
+        }
+    )
+} | ConvertTo-Json -Depth 10 -Compress
+
+$response = Invoke-RestMethod -Uri "$baseUrl/query" -Method POST -Headers $headers -Body $body
+$response
