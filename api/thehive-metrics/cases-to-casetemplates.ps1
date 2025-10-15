@@ -18,8 +18,6 @@ $from     = 0
 $total    = 0
 $allCases = @()
 
-Write-Host "Press 'Q' at any time to stop early..." -ForegroundColor Yellow
-
 do {
     # Build query body
     $body = @{
@@ -49,16 +47,6 @@ do {
         Write-Host ("Fetched {0} cases so far..." -f $total) -ForegroundColor Cyan
         $from += $pageSize
     }
-
-    # --- Escape hatch: press Q to quit ---
-    if ([Console]::KeyAvailable) {
-        $key = [Console]::ReadKey($true).Key
-        if ($key -eq 'Q') {
-            Write-Host "Stopping early at $total cases." -ForegroundColor Red
-            break
-        }
-    }
-
 } while ($response.Count -eq $pageSize)
 
 # --- Summarize by caseTemplate ---
