@@ -38,8 +38,3 @@ function Convert-JsonToCsv {
 
     $all | Export-Csv -Path $CsvPath -NoTypeInformation
 }
-    }
-
-    # Export to CSV
-    $flattened | Export-Csv -Path $CsvPath -NoTypeInformation
-}
